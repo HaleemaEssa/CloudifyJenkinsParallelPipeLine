@@ -14,7 +14,7 @@ pipeline {
       agent {label 'local'}
             steps {
               git branch: 'main', url: 'https://github.com/HaleemaEssa/displayblueprintresuslt.git'
-              sh 'cat upload-blueprint.txt.txt'
+              sh 'cat upload-blueprint.txt'
               sh 'sleep 1'
             }
         }
@@ -22,7 +22,7 @@ pipeline {
       agent {label 'local'}
             steps {
               git branch: 'main', url: 'https://github.com/HaleemaEssa/displayblueprintresuslt.git'
-              sh 'cat create-deployment.txt.txt'
+              sh 'cat create-deployment.txt'
               sh 'sleep 1'
 
             }
@@ -31,7 +31,7 @@ pipeline {
       agent {label 'local'}
             steps {
               git branch: 'main', url: 'https://github.com/HaleemaEssa/displayblueprintresuslt.git'
-              sh 'cat start-execution.txt.txt'
+              sh 'cat start-execution.txt'
             }
         }
     stage('data transfer b/w rpi & edge') {
