@@ -34,7 +34,7 @@ pipeline {
               sh 'cat start-execution.txt'
             }
         }
-    stage('data transfer b/w rpi & edge') {
+    stage('Data Transfering b/w RPi & Edge') {
       parallel {
 	       stage('On-RPI') {
 		   options {
@@ -60,7 +60,7 @@ pipeline {
         }//stage
 	      
 	      
-        stage('On-Edge1') {
+        stage('Receive Data') {
 		options {
                 timeout(time: 60, unit: "SECONDS")
             }
@@ -90,7 +90,7 @@ pipeline {
 	}//parallel
 }//stage
     
-    stage('On-Edge3') {
+    stage('Data Preprocessing') {
           agent {label 'local'}
           steps {
             sh 'echo "Data Preprocessing"'
@@ -100,6 +100,11 @@ pipeline {
             //sh 'docker stop  haleema/docker-edge1; docker rm  haleema/docker-edge1'
             sh 'docker run -v "${PWD}:/data" -t haleema/docker-edge3'
             sleep(time: 3, unit: "SECONDS")
+	  }
+    }
+	 stage('Sending pre-processed Data to Cloud') {
+          agent {label 'local'}
+          steps {	  
             sh 'echo "sending data to cloud based on Cloud AMQP"'
             git branch: 'main', url: 'https://github.com/HaleemaEssa/jenkins-edge-send.git'
             //sh 'docker build -t haleema/docker-edge222:latest .'
@@ -110,23 +115,10 @@ pipeline {
 
           }
         } 
-        //stage('On-Edge-Sendeng Processed Data to Cloud') {
-          //agent any
-          //steps {
-            //sh 'echo "edge1"'
-            //git branch: 'main', url: 'https://github.com/HaleemaEssa/jenkins-edge222.git'
-            //sh 'docker build -t haleema/docker-edge222:latest .'
-            //sh 'sleep 10'
-            //sleep(time: 3, unit: "SECONDS")
-            //sh 'docker stop  haleema/docker-edge1; docker rm  haleema/docker-edge1'
-            //sh 'docker run -v "${PWD}:/data" -t haleema/docker-edge222'
-            
-
-         // }
-        //} 
-    stage('On-aws') {
+       
+    stage('Receiving Data in AWS Instance') {
            options {
-                timeout(time: 200, unit: "SECONDS")
+                timeout(time: 60, unit: "SECONDS")
             }     
           agent {label 'aws'}
           steps {
@@ -134,7 +126,7 @@ pipeline {
             try {
             sh 'echo "cloud" '
             git branch: 'main', url: 'https://github.com/HaleemaEssa/jenkins-cloud.git'
-            sh 'docker build -t haleema/docker-cloud:latest .'
+            //sh 'docker build -t haleema/docker-cloud:latest .'
             sh 'docker run -v "${PWD}:/data" -t haleema/docker-cloud'
             sleep(time: 2, unit: "SECONDS")
                } catch (Throwable e) {
